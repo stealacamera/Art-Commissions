@@ -1,0 +1,46 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.CommissionReport>
+@{
+    var currentStatus = string.IsNullOrEmpty(Context.Request.Query["status"])
+                        ? ArtCommissions.Common.Enums.ReportStatus.PENDING.ToString()
+                        : Context.Request.Query["status"].ToString();
+}
+
+<div>
+    @if (Model.TotalCount == 0)
+    {
+        <div class="text-center noContextContainer">
+            <i class="fa-regular fa-folder-open fa-7x"></i>
+            <p class=" noContextText">No reports</p>
+        </div>
+    }
+    else
+    {
+        foreach (var report in Model.Items)
+        {
+            <a asp-action="Details" asp-controller="CommissionReports" asp-route-id="@report.Id" class="text-decoration-none text-reset">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <span class="fw-bold">Reported commission:</span> @report.ReportedCommission.Title
+                            <br />
+                            <span class="fw-bold">Reason:</span> @report.Reason
+                        </p>
+                    </div>
+                </div>
+            </a>
+        }
+    }
+</div>
+<nav>
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="CommissionReports" asp-action="Index" asp-route-status="@currentStatus" asp-route-page="@(Model.Page - 1)">Previous</a></li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="CommissionReports" asp-action="Index" asp-route-status="@currentStatus" asp-route-page="@(Model.Page + 1)">Next</a></li>
+        }
+    </ul>
+</nav>

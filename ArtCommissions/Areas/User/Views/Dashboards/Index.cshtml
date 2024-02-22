@@ -1,0 +1,61 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Commission>
+
+@{
+    Layout = "_DashboardLayout";
+}
+
+<section>
+    <a asp-action="Create" asp-controller="Commissions" class="btn btn-primary">Add a new commission</a>
+    @if (Model.TotalCount == 0)
+    {
+        <p class="noContextText noContextContainer">No commissions created</p>
+    }
+    else
+    {
+        foreach (var item in Model.Items)
+        {
+            <div id="commission-card-@item.Id" class="card mb-2">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img loading="lazy" src="~/images/commissions/sample-images/@item.SampleImages.First().ImageName" class="w-100" style="height: 13em; object-fit: cover;">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <a asp-controller="Commissions" asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-reset">
+
+                                <div class="card-title d-flex">
+                                    <p class="fs-5 fw-bold">@item.Title</p>
+                                    <h5 class="ms-auto">$@item.MinPrice.ToString("#,##0.00")</h5>
+                                </div>
+                                <h6 class="card-subtitle mb-2 text-muted fw-bold">Status: <span id="status-@item.Id" class="fw-normal">@(item.IsClosed ? "Closed" : "Open")</span></h6>
+                                <div class="card-text">@item.Description</div>
+                            </a>
+                        </div>
+                        <div class="text-end p-2">
+                            <a asp-action="Edit" asp-controller="Commissions" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                            <button id="status-btn-@item.Id" data-entity-id="@item.Id" data-status="@item.IsClosed" class="commission-state-btn btn btn-secondary">@(item.IsClosed ? "Open it up" : "Close it temporarily")</button>
+                            <button data-entity-id="@item.Id" class="delete-btn btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</section>
+<nav>
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="Dashboards" asp-action="Index" asp-route-page="@(Model.Page - 1)">Previous</a></li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="Dashboards" asp-action="Index" asp-route-page="@(Model.Page + 1)">Next</a></li>
+        }
+    </ul>
+</nav>
+
+@section Scripts {
+    <script src="~/js/commissions.js"></script>
+}

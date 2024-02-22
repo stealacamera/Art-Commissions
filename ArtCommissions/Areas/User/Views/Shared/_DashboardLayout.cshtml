@@ -1,0 +1,65 @@
+﻿@{
+    const string baseUrl = "/User/Dashboards";
+    bool isHomeLinkActive = false, isIncomingOrdersLinkActive = false, isOutgoingOrdersLinkActive = false;
+
+    switch (Url.RouteUrl(ViewContext.RouteData.Values))
+    {
+        case baseUrl:
+            isHomeLinkActive = true;
+            break;
+        case $"{baseUrl}/IncomingOrders":
+            isIncomingOrdersLinkActive = true;    
+            break;
+        case $"{baseUrl}/OutgoingOrders":
+            isOutgoingOrdersLinkActive = true;
+            break;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ArtCommissions</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ArtCommissions.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <partial name="_HeaderPartial"/>
+    <div class="container row">
+        <div class="col-4">
+            <div class="d-flex flex-column flex-shrink-0 px-3 ms-5">
+                <p class="d-flex align-items-center mb-3 mb-md-0 me-md-auto fs-5 fw-bold">@User.Identity?.Name</p>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a asp-action="Index" asp-controller="Dashboards" class="nav-link link-dark @(isHomeLinkActive ? "active" : "")">Home</a>
+                    </li>
+                    <li>
+                        <a asp-action="IncomingOrders" asp-controller="Dashboards" class="nav-link link-dark @(isIncomingOrdersLinkActive ? "active" : "")">Requests</a>
+                    </li>
+                    <li>
+                        <a asp-action="OutgoingOrders" asp-controller="Dashboards" class="nav-link link-dark @(isOutgoingOrdersLinkActive ? "active" : "")">Orders</a>
+                    </li>
+                </ul>
+                <div class="mt-auto">
+                    <hr />
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-link link-dark">Account settings</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

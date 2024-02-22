@@ -1,0 +1,17 @@
+﻿@model ArtCommissions.Common.DTOs.Report
+
+<input id="report-type" type="hidden" value="@ViewBag.ReportType.ToLower()">
+
+<div>
+    <p class="fw-bold">Report status: <span id="report-status" class="fw-normal">@Model.Status.ToString()</span></p>
+    <p class="fw-bold">Reason</p>
+    <p>@Model.Reason</p>
+
+    @if (Model.Status == ArtCommissions.Common.Enums.ReportStatus.PENDING)
+    {
+        <div id="conclusion-btns" class="d-flex gap-3">
+            <button id="accept-btn" data-entity-id="@Model.Id" class="btn btn-warning">Accept report</button>
+            <button id="reject-btn" data-entity-id="@Model.Id" class="btn btn-danger">Reject report</button>
+        </div>
+    }
+</div>

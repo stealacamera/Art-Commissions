@@ -1,0 +1,60 @@
+﻿@model ArtCommissions.Common.DTOs.CommissionAddRequestModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create a new commission</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinPrice" class="control-label"></label>
+                <input type="number" asp-for="MinPrice" class="form-control" />
+                <span asp-validation-for="MinPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsClosed" /> Keep commission temporarily closed
+                </label>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Tags" class="control-label"></label>
+                <select class="form-select" asp-for="Tags" asp-items="ViewBag.Tags"></select>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="SampleImages" class="control-label"></label>
+                @*<label for="formFileMultiple" class="form-label">Sample images</label>*@
+                <input class="form-control" type="file" asp-for="SampleImages" multiple required>
+                <span asp-validation-for="SampleImages" class="text-danger"></span>
+                <div id="image-previews" class="p-2 d-flex flex-wrap gap-2"></div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/imageUpload.js"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

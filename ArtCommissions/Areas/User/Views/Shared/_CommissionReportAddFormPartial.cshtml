@@ -1,0 +1,20 @@
+﻿@model ArtCommissions.Common.DTOs.CommissionReportAddRequestModel
+
+<form id="report-form" data-report-type="Commission" asp-area="Admin" asp-controller="CommissionReports" asp-action="Create" asp-route-id="@Model.ReportedCommissionId">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <div class="form-text">Please provide a thorough explanation of the reason behind your report</div>
+        <label asp-for="Reason" class="control-label"></label>
+        <textarea asp-for="Reason" class="form-control"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-3">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,11 @@
+﻿@model ArtCommissions.Common.DTOs.Tag
+
+<tr id="tag-@Model.Id-row">
+    <td id="tag-@Model.Id" contenteditable="false">
+        @Model.Name
+    </td>
+    <td>
+        <button type="button" class="edit-tag-btn btn btn-secondary" data-entity-id="@Model.Id">Edit</button>
+        <button type="button" class="remove-tag-btn btn btn-danger" data-entity-id="@Model.Id">Delete</button>
+    </td>
+</tr>

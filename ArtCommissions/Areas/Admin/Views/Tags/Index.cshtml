@@ -1,0 +1,66 @@
+﻿@using ArtCommissions.Common.DTOs;
+@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Tag>
+
+@{
+    ViewData["Title"] = "Index";
+
+    Tag newTag = new Tag();
+}
+
+<button id="create-tag-btn" type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#create-tag-modal">Add a new tag</button>
+
+<div class="modal fade" id="create-tag-modal" tabindex="-1" aria-labelledby="create-tag-modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add new tag</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-tag-form" asp-action="Create" asp-controller="Tags">
+                    <input type="text" class="form-control" asp-for="@newTag.Name" name="Name" />
+                    <span id="tag-form-validation" class="text-danger"></span>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table id="tags-table" class="table">
+    <thead>
+        <tr>
+            <th>
+                Tags
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in Model.Items)
+        {
+            <partial name="_TagsTableRowPartial" model="tag" />
+        }
+    </tbody>
+</table>
+<nav>
+    <ul class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="Tags" asp-action="Index" asp-route-page="@(Model.Page - 1)">Previous</a></li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item"><a class="page-link" asp-controller="Tags" asp-action="Index" asp-route-page="@(Model.Page + 1)">Next</a></li>
+        }
+    </ul>
+</nav>
+
+
+@section Scripts {
+    <script src="~/js/tags.js"></script>
+}

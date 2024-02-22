@@ -1,0 +1,98 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.CommissionOverviewVM
+
+@{
+    ViewData["Title"] = $"{Model.Commission.Title} - ArtCommissions";
+    bool isCurrentUserOwner = Model.Commission.Owner.Username == User.Identity?.Name;
+}
+
+<div class="row">
+    <div class="col-6">
+        <div id="sampleImages-@Model.Commission.Id" class="carousel slide carousel-fade">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.Commission.SampleImages.Count; i++)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <img loading="lazy" src="~/images/commissions/sample-images/@Model.Commission.SampleImages[i].ImageName" class="d-block w-100">
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#sampleImages-@Model.Commission.Id" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#sampleImages-@Model.Commission.Id" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="col">
+        <h3>@Model.Commission.Title</h3>
+        <a asp-controller="Profiles" asp-action="Index" asp-route-id="@Model.Commission.Owner.Id" class="text-decoration-none">@Model.Commission.Owner.Username</a>
+
+        <br />
+        <div>
+            @foreach (var tag in Model.Tags)
+            {
+                <a asp-area="" asp-controller="Home" asp-action="Search" asp-route-tagId="@tag.Id" class="text-decoration-none badge rounded-pill bg-primary">@tag.Name</a>
+            }
+        </div>
+
+        <br />
+
+        @if (isCurrentUserOwner)
+        {
+            <p class="mb-0"><span class="fw-bold">Status:</span> @(Model.Commission.IsClosed ? "Closed" : "Open")</p>
+        }
+        <p><span class="fw-bold">Minimum price:</span> $@Model.Commission.MinPrice.ToString("#,##0.00")</p>
+        <p>@Model.Commission.Description</p>
+
+        @if (!isCurrentUserOwner)
+        {
+            <a asp-area="User" asp-controller="Orders" asp-action="Create" asp-route-commissionId="@Model.Commission.Id" class="btn btn-primary float-end">Order</a>
+            <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">Report</button>
+
+            <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Report this commission</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <partial name="_CommissionReportAddFormPartial" model="new ArtCommissions.Common.DTOs.CommissionReportAddRequestModel {ReportedCommissionId = Model.Commission.Id}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a asp-area="User" asp-controller="Commissions" asp-action="Edit" asp-route-id="@Model.Commission.Id" class="btn btn-primary float-end">Edit</a>
+        }
+    </div>
+</div>
+
+<br />
+<div>
+    <h4>Reviews</h4>
+
+    @if (Model.OverallReviewsScore == null)
+    {
+        <p class="noContextText">No reviews yet</p>
+    }
+    else
+    {
+        <p><span class="fw-bold">Overall score:</span> @Model.OverallReviewsScore</p>
+
+        <section id="reviews">
+            <partial name="_ReviewsPaginatedListPartial" model="Model.Reviews" />
+        </section>
+    }
+</div>
+
+@section Scripts{
+    <script src="~/js/paginatedReviews.js"></script>
+    <script src="~/js/reportObject.js"></script>
+}

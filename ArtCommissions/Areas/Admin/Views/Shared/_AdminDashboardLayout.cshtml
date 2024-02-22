@@ -1,0 +1,72 @@
+﻿@{
+    bool isUserReportsLinkActive = false, 
+         isCommissionReportsLinkActive = false,
+         isCreateAdminLinkActive = false,
+         isTagsLinkActive = false;
+
+    string currentUrl = Url.RouteUrl(ViewContext.RouteData.Values);
+
+    if (currentUrl.Contains("/Admin/UserReports"))
+        isUserReportsLinkActive = true;
+    else if (currentUrl.Contains("/Admin/CommissionReports"))
+        isCommissionReportsLinkActive = true;
+    else if (currentUrl.Contains("/Admin/Administrative"))
+        isCreateAdminLinkActive = true;
+    else if (currentUrl.Contains("/Admin/Tags"))
+        isTagsLinkActive = true;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ArtCommissions</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ArtCommissions.styles.css" asp-append-version="true" />
+    <script src="https://kit.fontawesome.com/c6bfb61e68.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container row mt-3">
+        <div class="col-4">
+            <div class="d-flex flex-column flex-shrink-0 px-3 ms-5">
+                <p class="d-flex align-items-center mb-3 mb-md-0 me-md-auto fs-5 fw-bold">Hello, @User.Identity.Name</p>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li>
+                        <a asp-action="Index" asp-controller="UserReports" class="nav-link link-dark @(isUserReportsLinkActive ? "active" : "")">User reports</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="CommissionReports" class="nav-link link-dark @(isCommissionReportsLinkActive ? "active" : "")">Commission reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="Index" asp-controller="Tags" class="nav-link link-dark @(isTagsLinkActive ? "active" : "")">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="CreateAdmin" asp-controller="Administrative" class="nav-link link-dark @(isCreateAdminLinkActive ? "active" : "")">Add a new administrative user</a>
+                    </li>
+                </ul>
+                <div class="mt-auto">
+                    <hr />
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-link link-dark">Account settings</a>
+                </div>
+                <div class="mt-auto">
+                    <hr />
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,32 @@
+﻿@using ArtCommissions.Common.Enums
+@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Invoice>
+
+<div>
+    @foreach (var invoice in Model.Items)
+    {
+        <div class="card @(invoice.Status == InvoiceStatus.WAITING_PAYMENT ? "bg-warning bg-opacity-10 border border-warning" : "")">
+            <div class="card-body">
+                <h6 class="card-title">@invoice.Title</h6>
+                <p class="card-text">@invoice.Price.ToString("#,##0.00")<br />@invoice.Status</p>
+                <p class="card-text">@invoice.Description</p>
+                <p class="card-text text-secondary">
+                    Created at: @invoice.CreatedAt.ToShortDateString()<br />
+                    @(invoice.Status == InvoiceStatus.PAID ? $"Payed at: {invoice.PayedAt.ToShortDateString()}" : "Not paid")
+                </p>
+            </div>
+        </div>
+    }
+</div>
+<nav>
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li class="page-item" id="invoices-prev-btn" data-order-id="@Model.Items.First().Order.Id" data-curr-page="@Model.Page">Previous</li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item" id="invoices-next-btn" data-order-id="@Model.Items.First().Order.Id" data-curr-page="@Model.Page">Next</li>
+        }
+    </ul>
+</nav>

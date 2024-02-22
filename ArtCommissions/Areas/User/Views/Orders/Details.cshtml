@@ -1,0 +1,200 @@
+﻿@using Newtonsoft.Json
+@using ArtCommissions.Common.Enums
+@model ArtCommissions.Common.DTOs.ViewModels.OrderOverviewVM
+
+@{
+    ViewData["Title"] = $"Order nr. {Model.Order.Id}";
+
+    var upsertInvoiceModel = new ArtCommissions.Common.DTOs.InvoiceUpsertRequestModel { Id = 0, OrderId = Model.Order.Id };
+    var reviewAddModel = new ArtCommissions.Common.DTOs.ReviewAddRequestModel { CommissionId = Model.Order.Commission.Id };
+
+    if (Model.Order.Status == OrderStatus.REQUEST)
+        upsertInvoiceModel.Price = Model.Order.Commission.MinPrice;
+    else if (Model.Order.Status == OrderStatus.WAITING_PAYMENT)
+    {
+        var unpaidInvoice = Model.Invoices.Items.First();
+
+        upsertInvoiceModel.Id = unpaidInvoice.Id;
+        upsertInvoiceModel.Title = unpaidInvoice.Title;
+        upsertInvoiceModel.Description = unpaidInvoice.Description;
+        upsertInvoiceModel.Price = unpaidInvoice.Price;
+    }
+}
+
+<h3>Order #@Model.Order.Id - @Model.Order.Title</h3>
+<h5>Commission: <a asp-controller="Commissions" asp-action="Details" asp-route-id="@Model.Order.Commission.Id">@Model.Order.Commission.Title</a></h5>
+
+<div>
+    <p class="fw-bold">
+        Status: <span class="fw-normal">@Model.Order.Status</span>
+
+        @if (Model.Order.Status != OrderStatus.REQUEST)
+        {
+            <br />
+            @:Price: <span id="price-text" class="fw-normal">$@Model.Order.TotalPrice.ToString("#,##0.00")</span>
+        }
+    </p>
+    <br />
+
+    <section id="order-overview" class="d-flex gap-3">
+        <section class="col-8">
+            <div class="container text-start mb-3">
+                <div class="row">
+                    <div class="col px-0 col-md-auto fw-bold">Title:</div>
+                    <div class="col">@Model.Order.Title</div>
+                </div>
+                <div class="row">
+                    <div class="col px-0 col-md-auto fw-bold">Description:</div>
+                    <div class="col">@Model.Order.Description</div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                @if (ViewBag.CurrentUserId == Model.Order.Client.Id)
+                {
+                    if (Model.Order.Status == OrderStatus.WAITING_PAYMENT)
+                    {
+                        <div>
+                            <button id="cancel-order-btn" data-entity-id="@Model.Order.Id" class="btn btn-danger mb-3">Cancel request</button>
+
+                            <form id="payment-form" class="bg-primary bg-opacity-10 p-3 rounded">
+                                <div id="payment-element">
+                                </div>
+                                <button id="submit" class="btn btn-primary mt-2">
+                                    <div class="spinner hidden" id="spinner"></div>
+                                    <span id="button-text">Pay now</span>
+                                </button>
+                                <div id="payment-message" class="hidden"></div>
+                            </form>
+                        </div>
+                    }
+                    else if (Model.Order.Status == OrderStatus.IN_PROGRESS)
+                    {
+                        <button id="cancel-order-btn" data-entity-id="@Model.Order.Id" class="btn btn-danger">Cancel request</button>
+                    }
+                    else if (Model.Order.Status == OrderStatus.FINISHED)
+                    {
+                        <button type="button" id="add-review-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-review-modal">Leave a review</button>
+
+                        <div class="modal fade" id="add-review-modal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="addReviewModalLabel">Leave a review for this commission</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <partial name="_ReviewAddFormPartial" model="reviewAddModel" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else if (ViewBag.CurrentUserId == Model.Order.Commission.Owner.Id)
+                {
+                    if (Model.Order.Status == OrderStatus.REQUEST)
+                    {
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#upsertInvoiceModal">Accept</button>
+                        <button id="cancel-order-btn" data-entity-id="@Model.Order.Id" class="btn btn-danger">Reject</button>
+                    }
+                    else if (Model.Order.Status == OrderStatus.WAITING_PAYMENT)
+                    {
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#upsertInvoiceModal">Change invoice</button>
+                        <button id="cancel-invoice-btn" data-order-id="@Model.Order.Id" data-entity-id="@Model.Invoices.Items.First().Id" class="btn btn-danger">Cancel current invoice</button>
+                    }
+                    else if (Model.Order.Status == OrderStatus.IN_PROGRESS)
+                    {
+                        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#upsertInvoiceModal">Add new invoice</button>
+                    }
+                }
+            </div>
+
+            @if (ViewBag.CurrentUserId == Model.Order.Commission.Owner.Id && Model.Order.Status == OrderStatus.IN_PROGRESS)
+            {
+                <br />
+                <br />
+                <partial name="_FinalImageAddFormPartial" model="new ArtCommissions.Common.DTOs.FinalImageAddRequestModel { OrderId = Model.Order.Id}" />
+            }
+
+            @if (Model.FinalImagePath != null && Model.Order.Status != OrderStatus.REQUEST)
+            {
+                <br />
+                <br />
+
+                <div id="final-product">
+                    <p class="fw-bold">Final product:</p>
+                    <img src="~/images/orders/final-images/@Model.FinalImagePath" class="img-thumbnail w-50">
+
+                    @if (ViewBag.CurrentUserId == Model.Order.Client.Id && Model.Order.Status != OrderStatus.FINISHED)
+                    {
+                        <br />
+                        <button id="accept-final-btn" data-entity-id="@Model.Order.Id" class="btn btn-primary mt-2">Accept final</button>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="col">
+            <h5 class="fw-bold">Invoice history</h5>
+            <hr />
+            @if (Model.Invoices.TotalCount == 0)
+            {
+                <p class="noContextText noContextContainer">No invoices</p>
+            }
+            else
+            {
+                <section id="invoices">
+                    <partial name="_InvoicesPaginatedListPartial" model="@Model.Invoices" />
+                </section>
+            }
+        </section>
+    </section>
+
+</div>
+
+@if (Model.Order.Status == OrderStatus.REQUEST || Model.Order.Status == OrderStatus.WAITING_PAYMENT || Model.Order.Status == OrderStatus.IN_PROGRESS)
+{
+    <div class="modal fade" id="upsertInvoiceModal" tabindex="-1" aria-labelledby="upsertInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Send an invoice</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="upsertInvoiceFormBody" class="modal-body">
+                    <div class="form-text">In order to give an offer for a request or change the price, you need to work with an invoice.</div>
+                    <partial name="~/Areas/User/Views/Shared/_InvoiceUpsertFormPartial.cshtml" model="upsertInvoiceModel" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    @if (ViewBag.CurrentUserId == Model.Order.Client.Id && Model.Order.Status == OrderStatus.FINISHED)
+    {
+        <link rel="stylesheet" href="https://cdn.jstag.dev/jquery-bar-rating/1.2.2/themes/css-stars.min.css">
+    }
+}
+
+@section Scripts {
+    <script src="~/js/paginatedInvoices.js"></script>
+    <script src="~/js/orders.js"></script>
+    <script src="~/js/finalImages.js"></script>
+
+    @if (ViewBag.CurrentUserId == Model.Order.Client.Id && Model.Order.Status == OrderStatus.WAITING_PAYMENT)
+    {
+        <script>
+            const currentInvoiceJson = @Html.Raw(JsonConvert.SerializeObject(Model.Invoices.Items.First()));
+            const currentOrderId = @Model.Order.Id;
+        </script>
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="~/js/stripePayments.js"></script>
+    }
+
+    @if (ViewBag.CurrentUserId == Model.Order.Client.Id && Model.Order.Status == OrderStatus.FINISHED)
+    {
+        <script src="https://cdn.jstag.dev/jquery-bar-rating/1.2.2/jquery.barrating.min.js"></script>
+        <script src="~/js/reviews.js"></script>
+    }
+}

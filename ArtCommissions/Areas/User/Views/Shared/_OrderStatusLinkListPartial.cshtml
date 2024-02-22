@@ -1,0 +1,14 @@
+﻿@using ArtCommissions.Common.Enums
+@model string
+@{
+    var currentStatus = string.IsNullOrEmpty(Context.Request.Query["status"]) 
+                        ? OrderStatus.IN_PROGRESS.ToString() 
+                        : Context.Request.Query["status"].ToString();
+}
+
+<ul class="list-group list-group-horizontal">
+    @foreach (var status in ViewBag.OrderStatuses)
+    {
+        <a asp-action="@Model" asp-route-status="@status" class="list-group-item @(currentStatus == status.ToString() ? "active" : "")">@status.ToString()</a>
+    }
+</ul>

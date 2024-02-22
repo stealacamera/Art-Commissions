@@ -1,0 +1,33 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Review>
+
+<div>
+    @foreach (var review in Model.Items)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@review.Title</h5>
+                <a asp-controller="Profiles" asp-action="Index" asp-route-id="@review.Reviewer.Id">@review.Reviewer.Username</a>
+
+                <div class="d-flex gap-3 card-text">
+                    <p>@review.Rating/5</p>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <p class="card-text">@review.Description</p>
+            </div>
+        </div>
+    }
+</div>
+<nav>
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li class="page-item" id="reviews-prev-btn" data-commission-id="@Model.Items.First().Commission.Id" data-curr-page="@Model.Page">Previous</li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item" id="reviews-next-btn" data-commission-id="@Model.Items.First().Commission.Id" data-curr-page="@Model.Page">Next</li>
+        }
+    </ul>
+</nav>

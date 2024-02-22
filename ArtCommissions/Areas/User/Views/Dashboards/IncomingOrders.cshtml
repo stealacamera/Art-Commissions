@@ -1,0 +1,46 @@
+﻿@using ArtCommissions.Common.Enums
+@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Order>
+
+@{
+    Layout = "_DashboardLayout";
+
+    var currentStatus = string.IsNullOrEmpty(Context.Request.Query["status"])
+                        ? OrderStatus.IN_PROGRESS.ToString()
+                        : Context.Request.Query["status"].ToString();
+}
+
+<partial name="_OrderStatusLinkListPartial" model='"IncomingOrders"' />
+@if(Model.TotalCount == 0)
+{
+    <p class="noContextText noContextContainer">No orders</p>
+} else
+{
+    <section>
+        <div>
+            @foreach (var item in Model.Items)
+            {
+                <partial name="_OrderCardPartial" model="new ArtCommissions.Common.DTOs.ViewModels.OrderCardVM { Order = item, IsIncoming = true}" />
+            }
+        </div>
+        <nav>
+            <ul class="pagination">
+                @if (Model.Page > 1)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="Dashboards" asp-action="IncomingOrders" asp-route-status="@currentStatus" asp-route-page="@(Model.Page - 1)">Previous</a></li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="Dashboards" asp-action="IncomingOrders" asp-route-status="@currentStatus" asp-route-page="@(Model.Page + 1)">Next</a></li>
+                }
+            </ul>
+        </nav>
+    </section>
+    
+}
+
+@section Scripts {
+    @if(Context.Request.Query["status"] == OrderStatus.CANCELLED.ToString()) {
+        <script src="~/js/deleteOrder.js"></script>
+    }
+}

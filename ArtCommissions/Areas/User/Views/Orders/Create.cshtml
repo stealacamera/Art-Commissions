@@ -1,0 +1,35 @@
+﻿@model ArtCommissions.Common.DTOs.OrderAddRequestModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h3>Place order for "@ViewBag.CommissionTitle"</h3>
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" placeholder="Short, quick descriptor of commission" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>            
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <div class="form-text">
+                    Make sure to be thorough in your description: include details about the subject(s), the composition, etc. You can even include links to reference photos.
+                </div>
+                <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Place order" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

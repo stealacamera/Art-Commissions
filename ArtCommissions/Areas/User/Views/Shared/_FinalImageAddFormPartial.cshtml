@@ -1,0 +1,23 @@
+﻿@model ArtCommissions.Common.DTOs.FinalImageAddRequestModel
+
+<form id="submitFinalImageForm" asp-controller="FinalImages" asp-action="Create" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="OrderId" />
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="FinalImage"></label>
+        <input class="form-control" type="file" asp-for="FinalImage" required>
+        <span asp-validation-for="FinalImage" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Submit final product" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,37 @@
+﻿@using ArtCommissions.Common.Enums
+@model ArtCommissions.Common.DTOs.ViewModels.OrderCardVM
+
+<div id="order-card-@Model.Order.Id" class="card">
+    <a asp-area="User" asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Order.Id" class="text-decoration-none text-reset">
+        <div class="card-body">
+            <div class="d-flex g-3">
+                <h5 class="card-title fw-bold">
+                    @Model.Order.Title
+                    
+                    @if (Model.Order.Status != ArtCommissions.Common.Enums.OrderStatus.REQUEST)
+                    {
+                        <br />
+                        <span>Price:</span>
+                        <span class="fw-normal">$@Model.Order.TotalPrice.ToString("#,##0.00")</span>
+                    }
+                </h5>
+            </div>
+            <div class="card-text">
+                @if(Model.IsIncoming)
+                {
+                    <p><span class="fw-bold">Client:</span> @Model.Order.Client.Username</p>
+                } else
+                {
+                    <p><span class="fw-bold">Artist:</span> @Model.Order.Commission.Owner.Username</p>
+                }
+                <p>@Model.Order.Description</p>
+            </div>
+        </div>
+    </a>
+    @if(Model.Order.Status == OrderStatus.CANCELLED)
+    {
+        <div class="card-footer text-end">
+            <button data-entity-id="@Model.Order.Id" class="delete-btn btn btn-danger">Delete</button>
+        </div>
+    }
+</div>

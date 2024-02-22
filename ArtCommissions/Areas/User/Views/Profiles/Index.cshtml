@@ -1,0 +1,54 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.UserProfileVM
+
+<div class="d-flex gap-3">
+    <section id="user">
+        <h4 class="fw-bold">@Model.User.Username</h4>
+
+        @if (Model.OverallReviewScore != null)
+        {
+            <p><span class="fw-bold">Overall reviews:</span> @Model.OverallReviewScore</p>
+        }
+        <br />
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reportModal">Report user</button>
+    </section>
+    <div class="vr"></div>
+    <section id="commissions">
+        <h4>Commissions</h4>
+        <div class="d-flex gap-2 flex-wrap">
+            @foreach (var commission in Model.Commissions.Items)
+            {
+                <partial name="_CommissionCardPartial" model="commission" />
+            }
+        </div>
+        <nav>
+            <ul class="pagination">
+                @if (Model.Commissions.HasPreviousPage)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="Profiles" asp-action="Index" asp-route-commissionsPage="@(Model.Commissions.Page - 1)">Previous</a></li>
+                }
+                @if (Model.Commissions.HasNextPage)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="Profiles" asp-action="Index" asp-route-commissionsPage="@(Model.Commissions.Page + 1)">Next</a></li>
+                }
+            </ul>
+        </nav>
+    </section>
+</div>
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Report this user</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <partial name="_UserReportAddFormPartial" model="new ArtCommissions.Common.DTOs.UserReportAddRequestModel {ReportedUserId = Model.User.Id}" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/reportObject.js"></script>
+}

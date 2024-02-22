@@ -1,0 +1,18 @@
+﻿@model ArtCommissions.Common.DTOs.UserReportAddRequestModel
+
+<form id="report-form" data-report-type="User" asp-area="Admin" asp-controller="UserReports" asp-action="Create" asp-route-id="@Model.ReportedUserId">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <div class="form-text">Please provide a thorough explanation of the reason behind your report. You can include links for evidence of TOS violations from this user.</div>
+        <label asp-for="Reason" class="control-label"></label>
+        <textarea asp-for="Reason" class="form-control"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-3">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
