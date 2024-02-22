@@ -1,0 +1,26 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Commission>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<section>
+    <div class="d-flex flex-wrap gap-2">
+        @foreach (var commission in Model.Items)
+        {
+            <partial name="_CommissionCardPartial" model="commission" />
+        }
+    </div>
+    <nav class="d-flex flex-row-reverse mt-3">
+        <ul class="pagination">
+            @if (Model.Page > 1)
+            {
+                <li class="page-item"><a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(Model.Page - 1)">Previous</a></li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item"><a class="page-link" asp-controller="Home" asp-action="Index" asp-route-page="@(Model.Page + 1)">Next</a></li>
+            }
+        </ul>
+    </nav>
+</section>

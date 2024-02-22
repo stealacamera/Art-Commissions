@@ -1,0 +1,29 @@
+﻿@using ArtCommissions.Common.DTOs.ViewModels
+@model ArtCommissions.Common.DTOs.Commission
+
+<div class="card" style="width: 18rem;">
+    <partial name="_CardImageCarouselPartial"
+             model="@(new ImageCarouselVM { CommissionId = Model.Id, SampleImages = Model.SampleImages })" />
+
+    <div class="card-body">
+        <a asp-area="User"
+           asp-controller="Commissions"
+           asp-action="Details"
+           asp-route-id="@Model.Id"
+           class="text-decoration-none card-title fw-bold">
+            @Model.Title
+        </a>
+        <p class="card-text">Minimum price: $@Model.MinPrice.ToString("#,##0.00")</p>
+
+        @if (ViewBag.CurrentUserId != Model.Owner.Id)
+        {
+            <a asp-area="User"
+           asp-controller="Orders"
+           asp-action="Create"
+           asp-route-commissionId="@Model.Id"
+               class="btn btn-primary float-end">
+                Order
+            </a>
+        }
+    </div>
+</div>

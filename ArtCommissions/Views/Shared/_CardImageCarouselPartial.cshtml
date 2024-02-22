@@ -1,0 +1,27 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.ImageCarouselVM
+
+@if (Model.SampleImages.Count == 1)
+{
+    <img src="~/images/commissions/sample-images/@Model.SampleImages[0].ImageName" class="card-img-top w-100" style="height: 20em; object-fit: cover;">
+}
+else
+{
+    <div id="sampleImages-@Model.CommissionId" class="carousel slide carousel-fade">
+        <div class="carousel-inner">
+            @for (int i = 0; i < Model.SampleImages.Count; i++)
+            {
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <img loading="lazy" src="~/images/commissions/sample-images/@Model.SampleImages[i].ImageName" class="card-img-top w-100" style="height: 20em; object-fit: cover;">
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#sampleImages-@Model.CommissionId" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#sampleImages-@Model.CommissionId" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+}

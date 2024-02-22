@@ -1,0 +1,62 @@
+﻿@model ArtCommissions.Common.DTOs.ViewModels.PaginatedList<ArtCommissions.Common.DTOs.Commission>
+@{
+    var searchQuery = Context.Request.Query["q"].ToString();
+    var tagIdQuery = Context.Request.Query["tagId"].ToString();
+
+    string searchQueryValue = searchQuery != null ? searchQuery : "",
+         tagIdQueryValue = tagIdQuery != null ? tagIdQuery : "";
+}
+
+<h4>Search results for: <span class="fw-bold"></span></h4>
+<form asp-controller="Home" asp-action="Search" method="get">
+    <div class="d-flex gap-3">
+        <select class="form-select" asp-items="@ViewBag.Tags" name="tagId"></select>
+        <input class="form-control me-2" type="text" placeholder="Search" aria-label="Search" name="q" value="@searchQueryValue">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </div>
+</form>
+<br />
+
+<section>
+
+    @if (Model.TotalCount == 0)
+    {
+        <p class="noContextText noContextContainer">Please type in a search</p>
+    }
+    else
+    {
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var commission in Model.Items)
+            {
+                <partial name="_CommissionCardPartial" model="commission" />
+            }
+        </div>
+        <nav>
+            <ul class="pagination">
+                @if (Model.Page > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                   asp-controller="Home"
+                   asp-action="Search"
+                   asp-route-q="@searchQueryValue"
+                   asp-route-tagId="@tagIdQueryValue"
+                   asp-route-page="@(Model.Page - 1)">Previous</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                   asp-controller="Home"
+                   asp-action="Search"
+                   asp-route-q="@searchQueryValue"
+                   asp-route-tagId="@tagIdQueryValue"
+                   asp-route-page="@(Model.Page + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</section>

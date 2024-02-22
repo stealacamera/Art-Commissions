@@ -1,0 +1,31 @@
+﻿@using ArtCommissions.DAL.Entities;
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@{
+    bool isUserNotAdmin = !SignInManager.IsSignedIn(User) || (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"));
+
+    var searchQuery = Context.Request.Query["q"];
+    string searchQueryValue = string.IsNullOrEmpty(searchQuery) ? searchQuery.ToString() : "";
+}
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ArtCommissions</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                @if (isUserNotAdmin)
+                {
+                    <a asp-area="" asp-controller="Home" asp-action="Search" class="btn btn-outline-primary">Explore</a>
+                }
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </nav>
+</header>
